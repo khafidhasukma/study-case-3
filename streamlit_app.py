@@ -175,76 +175,8 @@ def getPlaylistItems(token, playlistId):
         writer.writerow(["id", "name", "artist", "popularity", "duration_ms", "year", "danceability", "energy", "key", "loudness", "mode",
                          "speechiness", "acousticness", "instrumentalness", "liveness", "valence", "tempo"])
         writer.writerows(dataset3)
-        
+
 getPlaylistItems(token, playlistId)
-
-import pandas as pd
-import numpy as np
-
-from sklearn.cluster import KMeans
-from sklearn.decomposition import PCA
-
-import plotly.express as px 
-
-## muat dataset
-data = pd.read_csv('dataset.csv')
-data.head()
-
-## Hapus karakter yang tidak perlu pada kolom artist dan name
-data['artist'] = data['artist'].map(lambda x: str(x)[2:-1])
-data['name'] = data['name'].map(lambda x: str(x)[2:-1])
-
-data.head()
-
-##delete empty string in name column
-data = data[data['name'] != '']
-
-##reset index
-data = data.reset_index(drop=True)
-data.head()
-
-## drop name artist and year column
-data2 = data.copy()
-data2 = data2.drop(['artist', 'name', 'year', 'popularity', 'key','duration_ms', 'mode', 'id'], axis=1)
-
-data2.head()
-
-from sklearn import preprocessing
-
-## normalize all data to 0 and 1
-x = data2.values ##returns a numpy array
-min_max_scaler = preprocessing.MinMaxScaler()
-x_scaled = min_max_scaler.fit_transform(x)
-data2 = pd.DataFrame(x_scaled)
-
-## convert to dataframe
-data2.columns = ['acousticness','danceability','energy','instrumentalness','loudness', 'liveness', 'speechiness', 'tempo','valence']
-
-## data2.head()
-data2.describe()
-
-## Lakukan PCA untuk mengurangi jumlah fitur menjadi 2 fitur saja
-pca = PCA(n_components=2)
-pca.fit(data2)
-pca_data = pca.transform(data2)
-
-## buat dataframe dari hasil pca
-pca_df = pd.DataFrame(data=pca_data, columns=['x', 'y'])
-pca_df.head()
-
-## plot pca_df using plotly
-fig = px.scatter(pca_df, x='x', y='y', title='PCA')
-fig.show()
-
-## rubah bentuk data ke list 
-data2 = list(zip(pca_df['x'], pca_df['y']))
-
-## fit kmeans model
-kmeans = KMeans(n_init=10, max_iter=1000).fit(data2)
-
-## make scatter plot using plotly
-fig = px.scatter(pca_df, x='x', y='y', color=kmeans.labels_, color_continuous_scale='rainbow', hover_data=[data.artist, data.name])
-fig.show()
 
 def dataProcessing():
     data = pd.read_csv('dataset.csv')
