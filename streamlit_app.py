@@ -82,7 +82,7 @@ def getAudioFeatures(token, trackId):
     ]
     dataset2.append(audio_features_temp)
 
-    def getPlaylistItems(token, playlistId):
+def getPlaylistItems(token, playlistId):
     # endpoint untuk akses playlist
     url = f'https://api.spotify.com/v1/playlists/{playlistId}/tracks'
     limit = '&limit=100'  # batas maksimal track yang diambil
@@ -111,8 +111,11 @@ def getAudioFeatures(token, trackId):
             int(json_result['items'][i]['track']['album']['release_date'][0:4]))
         dataset.append(playlist_items_temp)
 
+token = getToken()
+print('access token : '+token)
+
 for i in range(len(dataset)):
-getAudioFeatures(token, dataset[i][0])
+    getAudioFeatures(token, dataset[i][0])
 
 # gabungkan dataset dan dataset2
     for i in range(len(dataset)):
@@ -172,9 +175,7 @@ def getPlaylistItems(token, playlistId):
         writer.writerow(["id", "name", "artist", "popularity", "duration_ms", "year", "danceability", "energy", "key", "loudness", "mode",
                          "speechiness", "acousticness", "instrumentalness", "liveness", "valence", "tempo"])
         writer.writerows(dataset3)
-
-token = getToken()
-print('access token : '+token)
+        
 getPlaylistItems(token, playlistId)
 
 import pandas as pd
